@@ -54,10 +54,18 @@ def get_latest_entry(feed_urls):
         if image_url:
             title = entry.get("title", "Latest update")
             link = entry.get("link", "")
-            summary = entry.get("summary", "")[:300]
+            summary = clean_text(entry.get("summary", ""))[:300]
             return title, link, image_url, summary
 
     return None
+
+
+def clean_text(raw_html):
+    """Strip HTML tags and decode entities so the text is safe to send as a Telegram caption."""
+    import html
+    text = re.sub(r"<[^>]+>", "", raw_html)  # remove tags like <div>, <img>, <a>
+    text = html.unescape(text)  # convert &amp; -> & etc.
+    return text.strip()
 
 
 def extract_image(entry):
@@ -91,7 +99,8 @@ async def send_latest(update: Update, context: ContextTypes.DEFAULT_TYPE, feeds,
 
     title, link, image_url, summary = result
     icon = "🚗" if label == "car" else "🏍️"
-    caption = f"{icon} <b>{title}</b>\n\n{summary}\n\n🔗 {link}"
+    safe_title = clean_text(title)
+    caption = f"{icon} <b>{safe_title}</b>\n\n{summary}\n\n🔗 {link}"
 
     try:
         await update.message.reply_photo(photo=image_url, caption=caption, parse_mode="HTML")
