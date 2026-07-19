@@ -31,8 +31,8 @@ CAR_FEEDS = [
 ]
 
 BIKE_FEEDS = [
-    "https://www.motorcyclenews.com/rss/news/",
-    "https://www.rideapart.com/rss/",
+    "https://www.rideapart.com/rss/articles/all/",
+    "https://www.rideapart.com/rss/news/all/",
 ]
 
 
